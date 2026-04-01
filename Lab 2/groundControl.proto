@@ -1,0 +1,73 @@
+syntax = "proto2";
+
+// Ground Control service for rovers
+service ground_control {
+    // Sends requested map to rover
+    rpc getMap (mapRequest) returns (mapReply) {}
+    // Sends command string with requested size to rover
+    rpc getCommands (cmdReq) returns (cmdReply) {}
+    // Sends serial number for the mine at the given position to rover
+    rpc getSerial (serialRequest) returns (serialReply) {}
+    // Receives signal for when command execution is done
+    rpc reportStatus (status) returns (statusAck) {}
+    // Gets a mine's PIN from the rover
+    rpc sharePin (pinSend) returns (pinAck) {}
+}
+
+// Map requests consists of the map ID being requested
+message mapRequest {
+    required string id = 1;
+}
+
+// Map reply sends map array as a string
+// First row indicates number of rows and columns as space separated numbers
+// Everything below is space separated array representing map.
+message mapReply {
+    required string map = 1;
+    required string bounds = 2;
+}
+
+// Command requests give a size value to generate a command string of that length
+message cmdReq {
+    required int32 size = 1;
+}
+
+// Returns a string of commands of the length specified in the request
+message cmdReply {
+    required string commands = 1;
+}
+
+// Serial number requests provide a mine's position in X and Y coordinates
+message serialRequest {
+    required int32 posX = 1;
+    required int32 posY = 2;
+    required int32 id = 3;
+}
+
+// Returns the serial number as a string
+message serialReply {
+    required string mineSerial = 1;
+}
+
+// Boolean indicating command execution success or failure
+message status {
+    required bool success = 1;
+    required int32 id = 2;
+}
+
+// Acknowledgement of success or failure
+message statusAck {
+    required bool ack = 1;
+}
+
+// Pin value sent to server
+message pinSend {
+    required string pinVal = 1;
+    required int32 id = 2;
+    required string serial = 3;
+}
+
+// Acknowledgement that pin was recieved by server
+message pinAck {
+    required bool success = 1;
+}

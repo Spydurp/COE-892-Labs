@@ -1,0 +1,4 @@
+*.zip
+Project
+.venv
+__pycache__
