@@ -1,0 +1,21 @@
+{
+    "mines": [
+        {
+            "id": 1,
+            "Serial Number": "25f78x",
+            "x": 1,
+            "y": 0,
+            "armed": true,
+            "pin": ""
+        },
+        {
+            "id": 2,
+            "Serial Number": "0186x7",
+            "x": 0,
+            "y": 2,
+            "armed": true,
+            "pin": ""
+        }
+    ]
+}
+
