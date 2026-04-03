@@ -46,7 +46,7 @@ server = FastAPI()
 def getMap():
     return {"map" : Map}
 
-@server.put("/map")
+@server.put("/map/")
 def putMap(body: mapUpdateReq):
     global Map, height, width, mapLock
     # add extra rows
@@ -100,7 +100,7 @@ def delMineID(id: int):
             return {"Success": True, "error": None}
     return {"Success": False, "error": f"Error: mine with ID {id} not found"}
 
-@server.post("/mines")
+@server.post("/mines/")
 def createMine(body: createMineReq):
     global maxMineID, mines, mapLock
     maxMineID += 1
@@ -111,7 +111,7 @@ def createMine(body: createMineReq):
         return {"Success": True, "id": maxMineID, "error": None}
     return {"Success": False, "id": None, "error": f"Error: mine already exists at {body.x}, {body.y}"}
 
-@server.put("/mines/{id}")
+@server.put("/mines/{id}/")
 def updateMine(id: int, body: updateMineReq):
     global mines, Map
     for mine in mines["mines"]:
@@ -148,9 +148,10 @@ def getRoverID(id: int):
             return {"Success": True, "rover": rover, "error": None}
     return {"Success": False, "rover": None, "error": f"Error: rover with ID {id} not found"}
 
-@server.post("/rovers")
+@server.post("/rovers/")
 def createRover(roverReq: createRoverReq):
     global rovers, maxRoverID
+    print(roverReq.cmds)
     with roverLock:
         maxRoverID += 1
         rovers["rovers"].append({"id": maxRoverID, "status": "Not Started", "commands": roverReq.cmds, "x": 0, "y": 0})
@@ -167,7 +168,7 @@ def delRover(id: int):
         return {"Success": False, "error": f"Error: rover with ID {id} not found"}
 
 
-@server.put("/rovers/{id}")
+@server.put("/rovers/{id}/")
 def sendCmd(id: int, cmds: updateCmdReq):
     global rovers
     for rover in rovers["rovers"]:
@@ -181,7 +182,7 @@ def sendCmd(id: int, cmds: updateCmdReq):
     return {"Success": False, "error": f"Error: rover with ID {id} not found"}
 
 
-@server.post("/rovers/{id}/dispatch")
+@server.post("/rovers/{id}/dispatch/")
 async def dispatchRover(id: int):
     global rovers, Map, height, width, mapLock, roverLock
     for rover in rovers["rovers"]:
@@ -200,24 +201,10 @@ async def dispatchRover(id: int):
 @server.on_event("startup")
 def startup():
     global height, width, Map, mines, maxMineID
-    with open("Lab 4/map.txt", "r") as map:
-        ybound, xbound = map.readline().split(" ")
-        height = int(ybound)
-        width = int(xbound)
-        for row in map.read().split("\n"):
-            r = []
-            for i in row.split(" "):
-                r.append(int(i))
-            Map.append(r)
-    print(Map)
-    filename = "Lab 4/mines.json"
-    contents = ""
-    '''with open(filename, "r") as minesFile:
-        contents = minesFile.read()
-    mines = json.loads(contents)
-    for mine in mines["mines"]:
-        maxMineID = mine["id"]'''
+    Map = [[0,0,0],[0,0,0],[0,0,0],[0,0,0]]
+    height = 4
+    width = 3
 
 if __name__ == '__main__':
-    uvicorn.run("server:server", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("server:server", host="0.0.0.0", port=8000, reload=True)
 

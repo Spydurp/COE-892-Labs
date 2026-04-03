@@ -4,13 +4,13 @@ import os
 import server
 import time
 
-URL = 'http://127.0.0.1:8000/'
+URL = 'https://coe892lab42026g07-fsa5fwhkdpf7b5bu.canadacentral-01.azurewebsites.net/'
 DELAY = 1
 
 def displayMap():
     m = requests.get(URL + "map").json()
     for row in m["map"]:
-        print(row)
+        print("    " + str(row))
 
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -18,7 +18,11 @@ def clear():
 if __name__ == '__main__':
     while True:
         clear()
+        print("")
         displayMap()
+        print("")
+        print("----OPERATOR----")
+        print("")
         print("Spawn Rover: 1")
         print("See Rovers: 2")
         print("Edit Rover Commands: 3")
@@ -40,7 +44,7 @@ if __name__ == '__main__':
                 print("Commands: (L, R, M, D)")
                 commands = input(">> ")
                 body = server.createRoverReq(cmds=commands)
-                r = requests.post(URL + "/rovers", json=body.model_dump()).json()
+                r = requests.post(URL + "/rovers/", json=body.model_dump(), allow_redirects=False).json()
                 if r["Success"]:
                     print(f"Rover successfully spawned with ID {r["id"]}")
                 print("Press enter to return to main menu")
@@ -70,7 +74,7 @@ if __name__ == '__main__':
                 print("Commands: (L, R, M, D)")
                 commands = input(">> ")
                 body = server.updateCmdReq(cmds=commands)
-                ret = requests.put(URL + f"rovers/{rID}", json=body.model_dump()).json()
+                ret = requests.put(URL + f"rovers/{rID}/", json=body.model_dump()).json()
                 if ret["Success"]:
                     print("Commands updated")
                 else:
@@ -94,7 +98,7 @@ if __name__ == '__main__':
                 print("Dispatch Rover")
                 print("Rover ID: ")
                 rID = input(">> ")
-                ret = requests.post(URL + f"rovers/{rID}/dispatch").json()
+                ret = requests.post(URL + f"rovers/{rID}/dispatch/").json()
                 if ret["Success"]:
                     print(f"Successfully dispatched Rover {rID}")
                     print(ret["rover"])
@@ -114,7 +118,7 @@ if __name__ == '__main__':
                 if h == "":
                     h = None
                 body = server.mapUpdateReq(height=h, width=w)
-                ret = requests.put(URL + "map", json=body.model_dump()).json()
+                ret = requests.put(URL + "map/", json=body.model_dump()).json()
                 print("Press enter to return to main menu")
                 input()
             case "7":
@@ -127,7 +131,7 @@ if __name__ == '__main__':
                 print("Serial Number: ")
                 ser = input(">> ")
                 body = server.createMineReq(x=int(x), y=int(y), serial=ser)
-                ret = requests.post(URL + "mines", json=body.model_dump()).json()
+                ret = requests.post(URL + "mines/", json=body.model_dump()).json()
                 if ret["Success"]:
                     print(f"Mine successfully created at {x}, {y} with ID {ret["id"]}")
                 else:
@@ -159,7 +163,7 @@ if __name__ == '__main__':
                 else:
                     body.serial = ser
                 
-                ret = requests.put(URL + f"mines/{mID}", json=body.model_dump()).json()
+                ret = requests.put(URL + f"mines/{mID}/", json=body.model_dump()).json()
                 if ret["Success"]:
                     print("Mine successfully edited:")
                     print(ret["mine"])
